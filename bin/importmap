@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require_relative "../config/application"
+require "importmap/commands"
+
+Importmap::Commands.new(ARGV).run
+
+pin "@hotwired/turbo-rails", to: "turbo.min.js", preload: true

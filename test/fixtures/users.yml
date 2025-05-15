@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fitbit_user_id: MyString
+  fitbit_access_token: MyString
+  fitbit_refresh_token: MyString
+  fitbit_token_expires_at: 2025-05-14 20:00:25
+  display_name: MyString
+
+two:
+  fitbit_user_id: MyString
+  fitbit_access_token: MyString
+  fitbit_refresh_token: MyString
+  fitbit_token_expires_at: 2025-05-14 20:00:25
+  display_name: MyString
