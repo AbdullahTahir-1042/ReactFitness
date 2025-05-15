@@ -22,6 +22,7 @@ function Badges({ badges }) {
                 <p className="mb-0">{badge.name}</p>
               </div>
             </div>
+            
           ))}
         </div>
       </div>

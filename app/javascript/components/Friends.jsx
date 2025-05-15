@@ -3,6 +3,7 @@ import React from 'react';
 function Friends({ friends }) {
   if (!friends || friends.length === 0) return null;
 
+  
   return (
     <div className="card">
       <div className="card-header">

@@ -5,6 +5,7 @@ function LifetimeStats({ lifetimeStats }) {
 
   const stats = lifetimeStats.lifetime || {};
   
+  
   return (
     <div className="card mb-4">
       <div className="card-header">
