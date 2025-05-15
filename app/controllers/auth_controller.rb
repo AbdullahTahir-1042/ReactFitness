@@ -74,5 +74,6 @@ class AuthController < ApplicationController
     req['Authorization'] = "Bearer #{token}"
     res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
     JSON.parse(res.body)
+    
   end
 end
