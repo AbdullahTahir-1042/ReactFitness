@@ -3,89 +3,77 @@
 ReactFit
 A fitness dashboard application that integrates with Fitbit to display user's fitness data.
 
-Features
+## Tasks Done
 
-Fitbit OAuth2 authentication
-Dashboard with fitness statistics
-Lifetime stats display
-Badges showcase
-Steps and distance charts
-Friends list with step counts
-Demo mode for non-authenticated users
+* Fitbit OAuth2 authentication
+* Dashboard with fitness statistics
+* Lifetime stats display
+* Badges showcase
+* Steps and distance charts
+* Friends list with step counts
+* Demo mode for non-authenticated users
 
-Tech Stack
+# Tech Stack
 
-Ruby on Rails
-PostgreSQL
-Bootstrap 5
-Chart.js
-Fitbit API
+* Ruby on Rails
+* PostgreSQL
+* Chart.js
+* React
+* Fitbit API
 
-Setup
+# Setup
 
-##Clone the repository:
+## Clone the repository:
 
-git clone https://github.com/AbdullahTahir-1042/ReactFitness
-cd reactfit
+     git clone https://github.com/AbdullahTahir-1042/ReactFitness
+     cd reactfit
 
-##Install dependencies:
+## Install dependencies:
 
-bundle install
-yarn install
+     bundle install
+     yarn install
 
-##Set up the database:
+## Set up the database:
 
-rails db:create
-rails db:migrate
+     rails db:create
+    rails db:migrate
 
-##Create a .env file with your Fitbit API credentials:
+## Create a .env file with your Fitbit API credentials:
 
-FITBIT_CLIENT_ID=your_client_id
-FITBIT_CLIENT_SECRET=your_client_secret
+     FITBIT_CLIENT_ID=your_client_id
+     FITBIT_CLIENT_SECRET=your_client_secret
 
-##Start the server:
+## Start the server:
 
-rails server
-Visit http://localhost:3000 in your browser
+     rails server
+    Visit http://localhost:3000 in your browser
 
-##Development
 
-Run tests: rails test
-Build assets: yarn build
-Watch assets: yarn watch
 
-##Contributing
 
-Fork the repository
+# ❌ Remaining Tasks
 
-Create your feature branch (git checkout -b feature/amazing-feature)
-Commit your changes (git commit -m 'Add some amazing feature')
-Push to the branch (git push origin feature/amazing-feature)
-Open a Pull Request
+## Partial Pending
 
-❌ Remaining Tasks
+* Token exchange and secure storage of access tokens are still pending implementation. This is crucial for managing Fitbit API access securely.
 
-##Partial Pending
+# Enhancements and Finalization 
 
-Token exchange and secure storage of access tokens are still pending implementation. This is crucial for managing Fitbit API access securely.
+* Data Visualization Improvements 
 
-Enhancements and Finalization 
+* Additional visual representations need to be implemented.
 
-##Data Visualization Improvements 
+## Interface and Experience Enhancements 
 
-Additional visual representations need to be implemented.
+* Polishing the layout for better responsiveness across devices.
 
-##Interface and Experience Enhancements 
+* Optimizing usability and accessibility.
 
-Polishing the layout for better responsiveness across devices.
+## Final Testing and Debugging 
 
-Optimizing usability and accessibility.
+* Comprehensive system-wide testing.
 
-##Final Testing and Debugging 
-
-Comprehensive system-wide testing.
-
-Fixing bugs found during integration or UX testing.
+* Fixing bugs found during integration or UX testing.
 
 
 
