@@ -9,6 +9,7 @@
     "watch": "esbuild app/javascript/application.js --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.js=jsx --loader:.jsx=jsx --packages=external --watch"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.1",
@@ -16,7 +17,5 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0"
   },
-  
-    "type": "module"
-  
+  "type": "module"
 }
