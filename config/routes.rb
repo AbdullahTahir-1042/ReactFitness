@@ -1,26 +1,32 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
-  # Fitbit Authentication Routes
-  get '/auth/fitbit', to: 'auth#fitbit'
-  get '/auth/fitbit/callback', to: 'auth#fitbit_callback'
-  get '/auth/failure', to: 'auth#failure'
-
-  # Serve React App
+  # Set root to React dashboard
   root 'home#index'
-  get '*path', to: 'home#index', constraints: ->(request) { !request.xhr? && request.format.html? }
+  
+  # Authentication routes
+  post 'login', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
 
-  get '/callback', to: 'auth#fitbit_callback'
-
-  get '/api/profile', to: 'api#profile'
-  get '/api/steps', to: 'api#steps'
-  get '/api/badges', to: 'api#badges'
-  get '/api/lifetime_stats', to: 'api#lifetime_stats'
-  get '/api/distance', to: 'api#distance'
-  get '/api/friends', to: 'api#friends'
-
+  
+  # API routes
+  namespace :api do
+    resources :users, only: [:create]
+    get 'profile', to: 'users#profile'
+    get 'lifetime_stats', to: 'users#lifetime_stats'
+    get 'badges', to: 'users#badges'
+    get 'steps', to: 'users#steps'
+    get 'distance', to: 'users#distance'
+    get 'friends', to: 'users#friends'
+    get 'workouts', to: 'users#workouts'
+    post 'workouts', to: 'users#create_workout'
+    delete 'workouts/:id', to: 'users#destroy_workout'
+    get 'goals', to: 'users#goals'
+    post 'goals', to: 'users#create_goal'
+    delete 'goals/:id', to: 'users#destroy_goal'
+  end
+  
+  # Workout routes
+  resources :workouts, only: [:create, :index, :show]
+  
+  # Goal routes
+  resources :goals, only: [:create, :index, :show, :update]
 end
