@@ -35,9 +35,10 @@ A full-stack fitness dashboard app built with **React** and **Ruby on Rails**, d
 
 ### 📦 Prerequisites
 
-- Node.js (v14+)
-- Ruby (v3.x)
-- Rails (v7.x)
+- Node.js
+- Yarn
+- Ruby 
+- Rails
 - PostgreSQL
 
 ### 🔧 Installation
@@ -48,9 +49,11 @@ A full-stack fitness dashboard app built with **React** and **Ruby on Rails**, d
      git clone https://github.com/AbdullahTahir-1042/ReactFitness.git
      cd reactfitness
 
-#### 2. Setup the Backend
+#### 2. Setup the Project
     bundle install
     rails db:create db:migrate
+    yarn install
+    yarn build
     rails s
 # ScreenShots
 ![image](https://github.com/user-attachments/assets/e3396748-b660-4483-b5bf-9b882eb80568)
