@@ -7,7 +7,7 @@ import Login from './Login.jsx';
 import Signup from './Signup.jsx';
 import Workouts from './Workouts.jsx';
 import Goals from './Goals.jsx';
-import GoalModal from './GoalModal';
+import { FaUserFriends, FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
 
 class Dashboard extends Component {
   constructor(props) {
@@ -42,28 +42,17 @@ class Dashboard extends Component {
           'Accept': 'application/json'
         }
       });
-      
+
       if (response.ok) {
         const userData = await response.json();
-        this.setState({ 
-          isLoggedIn: true,
-          userData
-        });
+        this.setState({ isLoggedIn: true, userData });
         this.fetchUserData();
       } else {
-        this.setState({ 
-          isLoggedIn: false,
-          userData: null,
-          ...dummyData
-        });
+        this.setState({ isLoggedIn: false, userData: null, ...dummyData });
       }
     } catch (error) {
       console.error('Error checking login status:', error);
-      this.setState({ 
-        isLoggedIn: false,
-        userData: null,
-        ...dummyData
-      });
+      this.setState({ isLoggedIn: false, userData: null, ...dummyData });
     }
   }
 
@@ -76,13 +65,9 @@ class Dashboard extends Component {
 
       const fetchData = async (endpoint) => {
         try {
-          console.log(`Fetching data from ${endpoint}`);
           const response = await fetch(endpoint, { headers });
-          console.log(`Response from ${endpoint}:`, response.status, response.statusText);
           if (!response.ok) return null;
-          const data = await response.json();
-          console.log(`Data from ${endpoint}:`, data);
-          return data;
+          return await response.json();
         } catch (error) {
           console.error(`Error fetching ${endpoint}:`, error);
           return null;
@@ -108,10 +93,7 @@ class Dashboard extends Component {
       });
     } catch (error) {
       console.error('Error fetching user data:', error);
-      // Keep the dummy data if API calls fail
-      this.setState({
-        ...dummyData
-      });
+      this.setState({ ...dummyData });
     }
   }
 
@@ -127,27 +109,27 @@ class Dashboard extends Component {
       });
 
       if (response.ok) {
-        // Refresh the workouts data
-        const workoutsResponse = await fetch('/api/workouts', {
-          headers: {
-            'X-CSRF-Token': this.getCsrfToken(),
-            'Accept': 'application/json'
-          }
-        });
-        const workouts = await workoutsResponse.json();
-        
-        // Update lifetime stats
-        const lifetimeStatsResponse = await fetch('/api/lifetime_stats', {
-          headers: {
-            'X-CSRF-Token': this.getCsrfToken(),
-            'Accept': 'application/json'
-          }
-        });
-        const lifetimeStats = await lifetimeStatsResponse.json();
+        const [workoutsRes, statsRes] = await Promise.all([
+          fetch('/api/workouts', {
+            headers: {
+              'X-CSRF-Token': this.getCsrfToken(),
+              'Accept': 'application/json'
+            }
+          }),
+          fetch('/api/lifetime_stats', {
+            headers: {
+              'X-CSRF-Token': this.getCsrfToken(),
+              'Accept': 'application/json'
+            }
+          })
+        ]);
 
-        this.setState(prevState => ({
-          workouts: workouts || prevState.workouts,
-          lifetimeStats: lifetimeStats || prevState.lifetimeStats
+        const workouts = await workoutsRes.json();
+        const lifetimeStats = await statsRes.json();
+
+        this.setState(prev => ({
+          workouts: workouts || prev.workouts,
+          lifetimeStats: lifetimeStats || prev.lifetimeStats
         }));
       } else {
         console.error('Failed to add workout');
@@ -169,16 +151,15 @@ class Dashboard extends Component {
       });
 
       if (response.ok) {
-        // Refresh the goals data
-        const goalsResponse = await fetch('/api/goals', {
+        const res = await fetch('/api/goals', {
           headers: {
             'X-CSRF-Token': this.getCsrfToken(),
             'Accept': 'application/json'
           }
         });
-        const goals = await goalsResponse.json();
-        this.setState(prevState => ({
-          goals: Array.isArray(goals) ? goals : prevState.goals
+        const goals = await res.json();
+        this.setState(prev => ({
+          goals: Array.isArray(goals) ? goals : prev.goals
         }));
       } else {
         console.error('Failed to add goal');
@@ -205,7 +186,7 @@ class Dashboard extends Component {
   }
 
   handleLoginSuccess = (userData) => {
-    this.setState({ 
+    this.setState({
       isLoggedIn: true,
       showLoginForm: false,
       showSignupForm: false,
@@ -223,11 +204,7 @@ class Dashboard extends Component {
           'Accept': 'application/json'
         }
       });
-      this.setState({ 
-        isLoggedIn: false,
-        userData: null,
-        ...dummyData
-      });
+      this.setState({ isLoggedIn: false, userData: null, ...dummyData });
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -241,7 +218,7 @@ class Dashboard extends Component {
       dates.push(d.toISOString().split('T')[0]);
     }
     return dates;
-  };
+  }
 
   getCaloriesChartData = (workouts) => {
     const last3 = this.getLastNDates(3);
@@ -250,11 +227,8 @@ class Dashboard extends Component {
       const date = w.date;
       map[date] = (map[date] || 0) + (w.calories || 0);
     });
-    return last3.map(date => ({
-      dateTime: date,
-      value: map[date] || 0
-    }));
-  };
+    return last3.map(date => ({ dateTime: date, value: map[date] || 0 }));
+  }
 
   getDistanceChartData = (workouts) => {
     const last3 = this.getLastNDates(3);
@@ -263,87 +237,118 @@ class Dashboard extends Component {
       const date = w.date;
       map[date] = (map[date] || 0) + (w.distance || 0);
     });
-    return last3.map(date => ({
-      dateTime: date,
-      value: map[date] || 0
-    }));
-  };
+    return last3.map(date => ({ dateTime: date, value: map[date] || 0 }));
+  }
 
   getCaloriesYMax = (workouts) => {
     const arr = this.getCaloriesChartData(workouts);
     return Math.max(100, ...arr.map(d => d.value)) + 50;
-  };
+  }
 
   getDistanceYMax = (workouts) => {
     const arr = this.getDistanceChartData(workouts);
     return Math.max(5, ...arr.map(d => d.value)) + 1;
-  };
+  }
 
   render() {
     const { isLoggedIn, showLoginForm, showSignupForm, lifetimeStats, badges, steps, distance, workouts, goals, userData } = this.state;
 
-    if (showSignupForm) {
-      return <Signup onSignupSuccess={this.handleSignupSuccess} onCancel={this.handleCancelSignup} />;
-    }
-
-    if (showLoginForm) {
-      return <Login onLoginSuccess={this.handleLoginSuccess} onShowSignup={this.handleShowSignup} />;
-    }
+    if (showSignupForm) return <Signup onSignupSuccess={this.handleSignupSuccess} onCancel={this.handleCancelSignup} />;
+    if (showLoginForm) return <Login onLoginSuccess={this.handleLoginSuccess} onShowSignup={this.handleShowSignup} />;
 
     return (
-      <div className="container-fluid py-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1>ReactFit Dashboard</h1>
-          {isLoggedIn ? (
-            <button className="btn btn-outline-danger" onClick={this.handleLogout}>
-              Logout
-            </button>
-          ) : (
-            <button className="btn btn-primary" onClick={this.handleLogin}>
-              Login
-            </button>
-          )}
-        </div>
+      <div className="dashboard-bg py-4" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%)' }}>
+        <div className="container-fluid">
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h1
+              style={{
+                fontWeight: 700,
+                letterSpacing: 1,
+                background: 'linear-gradient(to right, #ff6a00, #ffb347, #00c6ff, #0072ff)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}
+            >
+              <FaUserCircle className="me-2 mb-1" size={36} /> ReactFit Dashboard
+            </h1>
+            <div className="d-flex gap-2">
+              {isLoggedIn ? (
+                <>
+                  <a href="/profile" className="btn btn-outline-primary d-flex align-items-center">
+                    <FaUserFriends className="me-1" /> Profile
+                  </a>
+                  <button className="btn btn-outline-danger d-flex align-items-center" onClick={this.handleLogout}>
+                    <FaSignOutAlt className="me-1" /> Logout
+                  </button>
+                </>
+              ) : (
+                <button className="btn btn-primary" onClick={this.handleLogin}>Login</button>
+              )}
+            </div>
+          </div>
 
-        <div className="text-center mb-4">
           {isLoggedIn && userData && (
-            <p className="text-muted mb-0">Welcome back, {userData.display_name}!</p>
+            <div className="alert alert-primary shadow-sm rounded-3 mb-4 text-center" style={{ fontSize: 20, fontWeight: 500 }}>
+              Welcome back, <span style={{ color: '#0d6efd', fontWeight: 700 }}>{userData.display_name}</span>! Keep pushing your limits!
+            </div>
           )}
+
           {!isLoggedIn && (
-            <div className="alert alert-info mx-auto" style={{ maxWidth: '900px' }}>
+            <div className="alert alert-info mx-auto shadow-sm rounded-3 mb-4" style={{ maxWidth: '900px', fontSize: 18 }}>
               <i className="fas fa-info-circle me-2"></i>
               You are not logged in. Showing demo data. Please login to track your own fitness journey!
             </div>
           )}
-        </div>
 
-        <div className="row g-4">
-          <div className="col-md-3">
-            <div className="d-flex flex-column h-100">
-              <Goals goals={goals} onAddGoal={this.handleAddGoal} isLoggedIn={isLoggedIn} />
-              <Badges badges={isLoggedIn ? (Array.isArray(badges) ? badges : []) : dummyData.badges} />
+          <div className="row g-4">
+            {/* Left Column: Workouts → Badges */}
+            <div className="col-md-3">
+              <div className="d-flex flex-column h-100 gap-3">
+                <div className="card shadow rounded-4 mb-3">
+                  <div className="card-body">
+                    <Workouts workouts={workouts} onAddWorkout={this.handleAddWorkout} />
+                  </div>
+                </div>
+                <div className="card shadow rounded-4">
+                  <div className="card-body text-center">
+                    <FaUserCircle size={28} className="mb-2 text-warning" />
+                    <Badges badges={isLoggedIn ? (Array.isArray(badges) ? badges : []) : dummyData.badges} />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="col-md-5">
-            <div className="d-flex flex-column h-100">
-              <TimeSeriesBarChart
-                data={this.getCaloriesChartData(workouts)}
-                title="Calories"
-                yMax={this.getCaloriesYMax(workouts)}
-              />
-              <TimeSeriesBarChart
-                data={this.getDistanceChartData(workouts)}
-                title="Distance (miles)"
-                yMax={this.getDistanceYMax(workouts)}
-              />
+            {/* Middle Column: Graphs */}
+            <div className="col-md-5">
+              <div className="d-flex flex-column h-100 gap-3">
+                <TimeSeriesBarChart
+                  data={this.getCaloriesChartData(workouts)}
+                  title="Calories"
+                  yMax={this.getCaloriesYMax(workouts)}
+                />
+                <TimeSeriesBarChart
+                  data={this.getDistanceChartData(workouts)}
+                  title="Distance (miles)"
+                  yMax={this.getDistanceYMax(workouts)}
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="col-md-4">
-            <div className="d-flex flex-column h-100">
-              <Workouts workouts={workouts} onAddWorkout={this.handleAddWorkout} />
-              <LifetimeStats lifetimeStats={lifetimeStats} />
+            {/* Right Column: Lifetime Stats → Goals */}
+            <div className="col-md-4">
+              <div className="d-flex flex-column h-100 gap-3">
+                <div className="card shadow rounded-4 mb-3">
+                  <div className="card-body">
+                    <LifetimeStats lifetimeStats={lifetimeStats} />
+                  </div>
+                </div>
+                <div className="card shadow rounded-4">
+                  <div className="card-body text-center">
+                    <FaUserCircle size={28} className="mb-2 text-primary" />
+                    <Goals goals={goals} onAddGoal={this.handleAddGoal} isLoggedIn={isLoggedIn} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

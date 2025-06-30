@@ -14,7 +14,36 @@ module Api
     end
 
     def profile
-      render json: current_user.slice(:id, :email, :display_name)
+      render json: current_user
+    end
+
+    def all_users
+      return render json: { error: 'Unauthorized' }, status: :unauthorized unless current_user&.admin?
+      
+      users = User.includes(:workouts, :goals).order(created_at: :desc)
+      render json: users.map { |user|
+        {
+          id: user.id,
+          display_name: user.display_name,
+          email: user.email,
+          admin: user.admin?,
+          created_at: user.created_at,
+          total_workouts: user.workouts.count,
+          total_goals: user.goals.count
+        }
+      }
+    end
+
+    def check_admin
+      if current_user
+        render json: { 
+          is_admin: current_user.admin?,
+          user_id: current_user.id,
+          email: current_user.email
+        }
+      else
+        render json: { error: 'Not logged in' }, status: :unauthorized
+      end
     end
 
     def lifetime_stats
@@ -82,6 +111,14 @@ module Api
       end
     end
 
+    def update
+      if current_user.update(user_update_params)
+        render json: { success: true, user: current_user.slice(:id, :email, :display_name) }
+      else
+        render json: { error: current_user.errors.full_messages.join(', ') }, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def user_params
@@ -94,6 +131,10 @@ module Api
 
     def goal_params
       params.require(:goal).permit(:goal_type, :target_value, :start_date, :end_date)
+    end
+
+    def user_update_params
+      params.require(:user).permit(:display_name, :email, :password, :password_confirmation)
     end
   end
 end 

@@ -23,7 +23,13 @@ function Login({ onLoginSuccess, onShowSignup }) {
 
       if (response.ok) {
         const data = await response.json();
-        onLoginSuccess(data);
+        if (data.user.admin) {
+          // Redirect admin users to admin dashboard
+          window.location.href = '/admin';
+        } else {
+          // Regular users go through normal flow
+          onLoginSuccess(data);
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Login failed. Please check your credentials.');

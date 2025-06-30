@@ -3,7 +3,7 @@
 // Entry point for the build script in your package.json
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import Dashboard from './components/Dashboard'
+import App from './components/App'
 
 import Login from './components/Login'
 import LifetimeStats from './components/LifetimeStats'
@@ -16,6 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('root')
   if (container) {
     const root = createRoot(container)
-    root.render(<Dashboard />)
+    root.render(<App />)
   }
 })

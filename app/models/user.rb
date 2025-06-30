@@ -9,6 +9,11 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, length: { minimum: 6 }, if: -> { new_record? || !password.nil? }
   
+  # Scopes
+  scope :admins, -> { where(admin: true) }
+  scope :regular_users, -> { where(admin: false) }
+  scope :recently_active, -> { where('updated_at > ?', 7.days.ago) }
+  
   # Fitness tracking attributes
   attribute :daily_steps, :integer, default: 0
   attribute :daily_distance, :float, default: 0.0
@@ -82,6 +87,45 @@ class User < ApplicationRecord
       }
     }
   ]
+  
+  # Admin methods
+  def admin?
+    admin == true
+  end
+  
+  def make_admin!
+    update!(admin: true)
+  end
+  
+  def remove_admin!
+    update!(admin: false)
+  end
+  
+  # User statistics for admin panel
+  def total_workouts_count
+    workouts.count
+  end
+  
+  def total_goals_count
+    goals.count
+  end
+  
+  def completed_goals_count
+    goals.where(completed: true).count
+  end
+  
+  def last_activity
+    workouts.maximum(:created_at) || created_at
+  end
+  
+  def fitness_score
+    score = 0
+    score += total_workouts_count * 10
+    score += completed_goals_count * 20
+    score += (daily_steps / 1000).to_i * 5
+    score += (daily_distance * 10).to_i
+    score
+  end
   
   # Methods for fitness tracking
   def add_steps(steps)

@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
         session[:user_id] = user.id
         render json: { 
           success: true, 
-          user: user.slice(:id, :email, :display_name) 
+          user: user.slice(:id, :email, :display_name, :admin)
         }
       else
         render json: { 

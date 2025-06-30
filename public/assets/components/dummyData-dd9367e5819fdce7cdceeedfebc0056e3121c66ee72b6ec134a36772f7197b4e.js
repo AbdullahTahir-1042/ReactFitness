@@ -1,3 +1,16 @@
+// Helper to get last 3 dates as strings
+function getLast3Dates() {
+  const dates = [];
+  for (let i = 2; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().split('T')[0]);
+  }
+  return dates;
+}
+
+const last3 = getLast3Dates();
+
 export default {
   loggedIn: false,
   user: null,
@@ -81,21 +94,21 @@ export default {
       duration: 30,
       calories: 300,
       distance: 5.0,
-      date: "2024-01-03"
+      date: last3[2]
     },
     {
       workout_type: "Cycling",
       duration: 45,
       calories: 250,
       distance: 15.0,
-      date: "2024-01-02"
+      date: last3[1]
     },
     {
       workout_type: "Swimming",
       duration: 60,
       calories: 400,
       distance: 2.0,
-      date: "2024-01-01"
+      date: last3[0]
     }
   ],
   goals: [

@@ -48,6 +48,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_23_214850) do
     t.text "fitness_goals"
     t.string "email"
     t.string "password_digest"
+    t.boolean "admin", default: false
   end
 
   create_table "workouts", force: :cascade do |t|

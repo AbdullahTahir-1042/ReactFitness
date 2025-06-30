@@ -1,0 +1,263 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+  <div class="text-muted">Last updated: <%= Time.current.strftime("%B %d, %Y at %I:%M %p") %></div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="admin-stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="mb-0"><%= @total_users %></h3>
+          <p class="mb-0">Total Users</p>
+        </div>
+        <i class="fas fa-users fa-2x opacity-75"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="admin-stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="mb-0"><%= @total_workouts %></h3>
+          <p class="mb-0">Total Workouts</p>
+        </div>
+        <i class="fas fa-running fa-2x opacity-75"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="admin-stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="mb-0"><%= @total_goals %></h3>
+          <p class="mb-0">Total Goals</p>
+        </div>
+        <i class="fas fa-bullseye fa-2x opacity-75"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="admin-stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="mb-0"><%= @completed_goals %></h3>
+          <p class="mb-0">Completed Goals</p>
+        </div>
+        <i class="fas fa-check-circle fa-2x opacity-75"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="admin-card p-4">
+      <h5><i class="fas fa-chart-bar me-2"></i>User Growth</h5>
+      <canvas id="userGrowthChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="admin-card p-4">
+      <h5><i class="fas fa-chart-pie me-2"></i>Workout Types</h5>
+      <canvas id="workoutTypesChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+  <div class="col-md-6">
+    <div class="admin-card p-4">
+      <h5><i class="fas fa-user-plus me-2"></i>Recent Users</h5>
+      <div class="table-responsive">
+        <table class="table admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Joined</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @recent_users.each do |user| %>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                      <i class="fas fa-user text-white"></i>
+                    </div>
+                    <%= user.display_name %>
+                  </div>
+                </td>
+                <td><%= user.email %></td>
+                <td><%= user.created_at.strftime("%b %d, %Y") %></td>
+                <td>
+                  <% if user.admin? %>
+                    <span class="badge bg-warning">Admin</span>
+                  <% else %>
+                    <span class="badge bg-success">User</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="admin-card p-4">
+      <h5><i class="fas fa-fire me-2"></i>Recent Workouts</h5>
+      <div class="table-responsive">
+        <table class="table admin-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Type</th>
+              <th>Duration</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @recent_workouts.each do |workout| %>
+              <tr>
+                <td><%= workout.user.display_name %></td>
+                <td>
+                  <span class="badge bg-info"><%= workout.workout_type %></span>
+                </td>
+                <td><%= workout.duration %> min</td>
+                <td><%= workout.date.strftime("%b %d") %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Top Users -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="admin-card p-4">
+      <h5><i class="fas fa-trophy me-2"></i>Top Active Users</h5>
+      <div class="table-responsive">
+        <table class="table admin-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>User</th>
+              <th>Workouts</th>
+              <th>Goals</th>
+              <th>Fitness Score</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @top_users.each_with_index do |user, index| %>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <% if index < 3 %>
+                      <i class="fas fa-medal me-2" style="color: <%= ['#FFD700', '#C0C0C0', '#CD7F32'][index] %>;"></i>
+                    <% end %>
+                    #<%= index + 1 %>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                      <i class="fas fa-user text-white"></i>
+                    </div>
+                    <%= user.display_name %>
+                  </div>
+                </td>
+                <td><%= user.workouts.count %></td>
+                <td><%= user.goals.count %></td>
+                <td><%= user.fitness_score %></td>
+                <td>
+                  <%= link_to "View Details", admin_user_path(user), class: "btn btn-admin btn-admin-primary btn-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // User Growth Chart
+  const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+  new Chart(userGrowthCtx, {
+    type: 'line',
+    data: {
+      labels: <%= raw @users_by_month.map { |date, _| date }.to_json %>,
+      datasets: [{
+        label: 'New Users',
+        data: <%= raw @users_by_month.map { |_, count| count }.to_json %>,
+        borderColor: '#667eea',
+        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+
+  // Workout Types Chart
+  const workoutTypesCtx = document.getElementById('workoutTypesChart').getContext('2d');
+  new Chart(workoutTypesCtx, {
+    type: 'doughnut',
+    data: {
+      labels: <%= raw @workouts_by_type.map { |type, _| type }.to_json %>,
+      datasets: [{
+        data: <%= raw @workouts_by_type.map { |_, count| count }.to_json %>,
+        backgroundColor: [
+          '#667eea',
+          '#764ba2',
+          '#f093fb',
+          '#f5576c',
+          '#4facfe'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+});
+</script> 
